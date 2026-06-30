@@ -2,6 +2,5 @@
 __pycache__/
 *.pyc
 .streamlit/
-data/*.csv
 models/*.pkl
 .ipynb_checkpoints/
