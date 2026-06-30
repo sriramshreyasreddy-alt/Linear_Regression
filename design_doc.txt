@@ -1,0 +1,249 @@
+# Design Document
+
+## Project Overview
+
+This project develops a machine learning application that predicts Apple's next trading day's closing price using historical stock market data and a Linear Regression model. The application consists of an offline training pipeline and an interactive web interface for visualization and prediction.
+
+---
+
+# System Architecture
+
+```
+                  User
+                    │
+                    ▼
+           Streamlit Web App
+                    │
+                    ▼
+          Prediction Controller
+                    │
+        ┌───────────┴───────────┐
+        ▼                       ▼
+ Data Preprocessing      Feature Engineering
+        │                       │
+        └───────────┬───────────┘
+                    ▼
+          Linear Regression Model
+                    │
+                    ▼
+         Next-Day Price Prediction
+```
+
+---
+
+# High-Level Workflow
+
+```
+Load Dataset
+      │
+      ▼
+Clean Data
+      │
+      ▼
+Perform EDA
+      │
+      ▼
+Engineer Features
+      │
+      ▼
+Create Target Variable
+      │
+      ▼
+Train/Test Split
+      │
+      ▼
+Train Linear Regression
+      │
+      ▼
+Evaluate Model
+      │
+      ▼
+Save Model
+      │
+      ▼
+Deploy Streamlit App
+```
+
+---
+
+# Components
+
+## 1. Data Loader
+
+### Responsibilities
+
+* Load CSV dataset
+* Parse dates
+* Filter Apple (AAPL)
+* Sort by date
+
+### Input
+
+NASDAQ CSV
+
+### Output
+
+Clean DataFrame
+
+---
+
+## 2. Preprocessing Module
+
+### Responsibilities
+
+* Remove missing values
+* Remove duplicates
+* Convert data types
+* Normalize date format
+
+### Output
+
+Processed dataset
+
+---
+
+## 3. Feature Engineering Module
+
+### Responsibilities
+
+Generate predictive features.
+
+Features include:
+
+* Daily Return
+* Daily Range
+* Moving Average (5)
+* Moving Average (10)
+* Moving Average (20)
+* Rolling Volatility
+* Previous Close
+* Previous Volume
+
+Output is a feature matrix ready for training.
+
+---
+
+## 4. Target Generation
+
+Generate the prediction target.
+
+```
+Target = Next Day Closing Price
+```
+
+This is implemented by shifting the Close column by one trading day.
+
+---
+
+## 5. Model Training Module
+
+### Algorithm
+
+Linear Regression
+
+### Responsibilities
+
+* Train model
+* Fit parameters
+* Serialize model using Joblib
+
+Output:
+
+```
+linear_regression.pkl
+```
+
+---
+
+## 6. Evaluation Module
+
+Metrics:
+
+* MAE
+* RMSE
+* R² Score
+
+Visualizations:
+
+* Actual vs Predicted
+* Residual Plot
+
+---
+
+## 7. Streamlit Interface
+
+### Dashboard Functions
+
+* Display historical price chart
+* Display engineered features
+* Predict next-day closing price
+* Show evaluation metrics
+* Display prediction graph
+
+---
+
+# Directory Structure
+
+```
+stock-price-predictor/
+
+data/
+notebooks/
+src/
+    data_loader.py
+    preprocessing.py
+    feature_engineering.py
+    train_model.py
+    evaluate.py
+    predict.py
+
+models/
+    linear_regression.pkl
+
+visualizations/
+
+app.py
+
+requirements.txt
+
+README.md
+```
+
+---
+
+# Technology Stack
+
+| Layer            | Technology         |
+| ---------------- | ------------------ |
+| Language         | Python             |
+| Data Processing  | Pandas, NumPy      |
+| Machine Learning | Scikit-learn       |
+| Visualization    | Matplotlib, Plotly |
+| Deployment       | Streamlit          |
+| Version Control  | Git, GitHub        |
+| Model Storage    | Joblib             |
+
+---
+
+# Design Decisions
+
+* Use **Linear Regression** as a simple, interpretable baseline model.
+* Train using **chronological data splits** to prevent data leakage.
+* Keep the preprocessing and feature engineering modules independent to improve maintainability.
+* Separate model training from prediction so the deployed application performs inference only.
+* Use Streamlit for rapid deployment and interactive visualization.
+
+---
+
+# Future Scalability
+
+The architecture is designed to support future enhancements with minimal changes:
+
+* Multiple stock tickers
+* Additional regression models (Random Forest, XGBoost)
+* Live market data integration
+* Automated model retraining
+* REST API for predictions
+
+
+
